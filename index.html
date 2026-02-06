@@ -21,13 +21,15 @@ button { font-size: 1.2rem; padding: 12px 30px; border: none; border-radius: 50p
 #question-screen { display: none; }
 #success-message { display: none; }
 
-/* Floating Letter Appearance (Starts invisible, fades in after 5s) */
+/* Floating Letter Appearance (2s Delay) */
 .envelope-wrapper { 
     margin-top: 20px; 
     cursor: pointer; 
     opacity: 0; 
     animation: fadeInLetter 1.5s forwards; 
-    animation-delay: 5s; 
+    animation-delay: 2s; 
+    position: relative;
+    display: inline-block;
 }
 
 @keyframes fadeInLetter { 
@@ -35,15 +37,24 @@ button { font-size: 1.2rem; padding: 12px 30px; border: none; border-radius: 50p
     to { opacity: 1; transform: translateY(0); } 
 }
 
-.letter-hint { font-size: 0.9rem; color: #d32f2f; margin-top: 5px; font-weight: bold; }
+/* Red Heart Seal on Envelope */
+.heart-seal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -10%) scale(0.6);
+    font-size: 25px;
+}
 
-/* Letter Overlay (The "Paper" that fills the screen) */
+.letter-hint { font-size: 0.9rem; color: #d81b60; margin-top: 5px; font-weight: bold; }
+
+/* Full-Screen Letter Overlay (Baby Pink) */
 #letter-overlay { 
     display: none; 
     position: fixed; 
     top: 0; left: 0; 
     width: 100%; height: 100%; 
-    background: #fff9c4; /* Parchment color */
+    background: #fce4ec; /* Baby Pink */
     z-index: 200; 
     justify-content: center; 
     align-items: center; 
@@ -64,19 +75,21 @@ button { font-size: 1.2rem; padding: 12px 30px; border: none; border-radius: 50p
 .poem-text { 
     font-family: 'Georgia', serif; 
     font-style: italic; 
-    color: #333; 
+    color: #4a4a4a; 
     line-height: 1.8; 
     font-size: 1.15rem; 
-    white-space: pre-line; /* Keeps line breaks */
+    white-space: pre-line;
 }
 
 .close-btn { 
     margin-top: 30px; 
-    background: #d32f2f; 
+    background: #d81b60; 
     color: white; 
     padding: 10px 25px; 
     border-radius: 20px; 
-    font-size: 0.9rem;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
 }
 
 .promise-text { font-style: italic; color: #880e4f; margin-top: 15px; font-size: 1rem; }
@@ -92,7 +105,7 @@ button { font-size: 1.2rem; padding: 12px 30px; border: none; border-radius: 50p
 
 <div class="container">
     <div id="start-screen">
-        <h1>For My Giada, My Sally, My Forever ❤️</h1>
+        <h1>For My Giada, My Sally, My Barbie, My Hello Kitty, My Forever ❤️</h1>
         <p>Tap to start...</p>
         <button class="start-btn" onclick="startExperience()">Open 💌</button>
     </div>
@@ -118,7 +131,8 @@ button { font-size: 1.2rem; padding: 12px 30px; border: none; border-radius: 50p
         <p class="promise-text">I promise Giada, My Sally, I will be your forever Valentine and celebrate you sempre 🩷🩷🩷</p>
         
         <div class="envelope-wrapper" onclick="openLetter()">
-            <span style="font-size: 55px; display: block; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2));">✉️</span>
+            <span style="font-size: 60px; display: block;">✉️</span>
+            <span class="heart-seal">❤️</span>
             <div class="letter-hint">My Sally, there is something more...<br>Tap the letter.</div>
         </div>
     </div>
