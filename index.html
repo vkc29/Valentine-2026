@@ -7,7 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <style>
 body { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #e3f2fd; font-family: 'Arial', sans-serif; margin: 0; overflow: hidden; }
-.container { text-align: center; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 90%; width: 400px; }
+.container { text-align: center; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 90%; width: 400px; position: relative; }
 h1 { color: #1565c0; font-size: 1.8rem; margin-bottom: 10px; }
 p { font-size: 1.1rem; color: #555; line-height: 1.5; }
 .gif-container img { width: 100%; max-width: 300px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
@@ -15,78 +15,175 @@ p { font-size: 1.1rem; color: #555; line-height: 1.5; }
 button { font-size: 1.2rem; padding: 12px 30px; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; outline: none; -webkit-tap-highlight-color: transparent; }
 #yesBtn { background-color: #d32f2f; color: white; box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3); position: relative; z-index: 10; }
 #noBtn { background-color: #cfd8dc; color: #333; position: absolute; left: 50%; transform: translateX(20px); transition: all 0.3s ease-out; }
+
+/* Screen States */
 #start-screen { display: block; }
 #question-screen { display: none; }
 #success-message { display: none; }
+
+/* Floating Letter Appearance (Starts invisible, fades in after 5s) */
+.envelope-wrapper { 
+    margin-top: 20px; 
+    cursor: pointer; 
+    opacity: 0; 
+    animation: fadeInLetter 1.5s forwards; 
+    animation-delay: 5s; 
+}
+
+@keyframes fadeInLetter { 
+    from { opacity: 0; transform: translateY(20px); } 
+    to { opacity: 1; transform: translateY(0); } 
+}
+
+.letter-hint { font-size: 0.9rem; color: #d32f2f; margin-top: 5px; font-weight: bold; }
+
+/* Letter Overlay (The "Paper" that fills the screen) */
+#letter-overlay { 
+    display: none; 
+    position: fixed; 
+    top: 0; left: 0; 
+    width: 100%; height: 100%; 
+    background: #fff9c4; /* Parchment color */
+    z-index: 200; 
+    justify-content: center; 
+    align-items: center; 
+    animation: slideUp 0.6s ease-out; 
+}
+
+@keyframes slideUp { 
+    from { transform: translateY(100%); } 
+    to { transform: translateY(0); } 
+}
+
+.opened-letter-content { 
+    padding: 30px; 
+    text-align: center; 
+    max-width: 85%; 
+}
+
+.poem-text { 
+    font-family: 'Georgia', serif; 
+    font-style: italic; 
+    color: #333; 
+    line-height: 1.8; 
+    font-size: 1.15rem; 
+    white-space: pre-line; /* Keeps line breaks */
+}
+
+.close-btn { 
+    margin-top: 30px; 
+    background: #d32f2f; 
+    color: white; 
+    padding: 10px 25px; 
+    border-radius: 20px; 
+    font-size: 0.9rem;
+}
+
 .promise-text { font-style: italic; color: #880e4f; margin-top: 15px; font-size: 1rem; }
 .start-btn { background-color: #1565c0; color: white; animation: pulse 2s infinite; }
 @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 </style>
 </head>
 <body>
+
 <audio id="bgMusic" loop>
 <source src="song.mp3" type="audio/mp3">
 </audio>
+
 <div class="container">
-<div id="start-screen">
-<h1>For My Giada, My Sally, My Forever ❤️</h1>
-<p>Tap to start...</p>
-<button class="start-btn" onclick="startExperience()">Open 💌</button>
+    <div id="start-screen">
+        <h1>For My Giada, My Sally, My Barbie, My Hello Kitty, My Forever ❤️</h1>
+        <p>Tap to start...</p>
+        <button class="start-btn" onclick="startExperience()">Open 💌</button>
+    </div>
+
+    <div id="question-screen">
+        <div class="gif-container">
+            <img src="driving.gif" alt="Sally and McQueen">
+        </div>
+        <h1>Will you be my Valentine?</h1>
+        <p>From your McQueen 🚗💨</p>
+        <p style="font-size: 0.8rem; color: #999;">Try saying No... I dare you! 😉</p> 
+        <div class="btn-container">
+            <button id="yesBtn" onclick="sheSaidYes()">Yes</button>
+            <button id="noBtn" onmouseover="moveButton()" ontouchstart="moveButton()">No</button>
+        </div>
+    </div>
+
+    <div id="success-message">
+        <div class="gif-container">
+            <img src="kiss.gif" alt="Success Kiss">
+        </div>
+        <h1>I knew it! ❤️</h1>
+        <p class="promise-text">I promise Giada, My Sally, I will be your forever Valentine and celebrate you sempre 🩷🩷🩷</p>
+        
+        <div class="envelope-wrapper" onclick="openLetter()">
+            <span style="font-size: 55px; display: block; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2));">✉️</span>
+            <div class="letter-hint">My Sally, there is something more...<br>Tap the letter.</div>
+        </div>
+    </div>
 </div>
-<div id="question-screen">
-<div class="gif-container">
-<img src="driving.gif" alt="Sally and McQueen">
+
+<div id="letter-overlay">
+    <div class="opened-letter-content">
+        <div class="poem-text">
+            For the paths we’ve crossed and roads we’ll take,
+            A promise in every choice we make.
+            
+            In this small token, a secret lies,
+            A piece of my heart, a soft surprise.
+            
+            The man I’m becoming, I become for you,
+            Please open the gift now—let the love come through. ❤️
+        </div>
+        <button class="close-btn" onclick="closeLetter()">Back to us ❤️</button>
+    </div>
 </div>
-<h1>Will you be my Valentine?</h1>
-<p>From your McQueen 🚗💨</p>
-<p>Try saying No... Try it, Try it hahahahahahah</p> 
-<div class="btn-container">
-<button id="yesBtn" onclick="sheSaidYes()">Yes</button>
-<button id="noBtn" onmouseover="moveButton()" ontouchstart="moveButton()">No</button>
-</div>
-</div>
-<div id="success-message">
-<div class="gif-container">
-<img src="kiss.gif" alt="Success Kiss">
-</div>
-<h1>I knew it! ❤️</h1>
-<p class="promise-text">I promise Giada, My Sally, I will be your forever Valentine and Celebrate you sempre 🩷🩷🩷</p>
-</div>
-</div>
+
 <script>
 function startExperience() {
-var music = document.getElementById("bgMusic");
-music.volume = 0.5;
-music.play().catch(error => console.log("Music play failed:", error));
-document.getElementById('start-screen').style.display = 'none';
-document.getElementById('question-screen').style.display = 'block';
+    var music = document.getElementById("bgMusic");
+    music.volume = 0.5;
+    music.play().catch(error => console.log("Music play failed:", error));
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('question-screen').style.display = 'block';
 }
+
 function moveButton() {
-var noBtn = document.getElementById('noBtn');
-var x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
-var y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
-noBtn.style.position = 'fixed';
-noBtn.style.left = x + 'px';
-noBtn.style.top = y + 'px';
-noBtn.style.transform = 'none'; 
+    var noBtn = document.getElementById('noBtn');
+    var x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+    var y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+    noBtn.style.position = 'fixed';
+    noBtn.style.left = x + 'px';
+    noBtn.style.top = y + 'px';
 }
+
 function sheSaidYes() {
-document.getElementById('question-screen').style.display = 'none';
-document.getElementById('success-message').style.display = 'block';
-launchConfetti();
+    document.getElementById('question-screen').style.display = 'none';
+    document.getElementById('success-message').style.display = 'block';
+    launchConfetti();
 }
+
+function openLetter() {
+    document.getElementById('letter-overlay').style.display = 'flex';
+}
+
+function closeLetter() {
+    document.getElementById('letter-overlay').style.display = 'none';
+}
+
 function launchConfetti() {
-var duration = 3000;
-var animationEnd = Date.now() + duration;
-var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-var randomInRange = (min, max) => Math.random() * (max - min) + min;
-var interval = setInterval(function() {
-var timeLeft = animationEnd - Date.now();
-if (timeLeft <= 0) return clearInterval(interval);
-var particleCount = 50 * (timeLeft / duration);
-confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
-confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
-}, 250);
+    var duration = 3000;
+    var animationEnd = Date.now() + duration;
+    var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+    var randomInRange = (min, max) => Math.random() * (max - min) + min;
+    var interval = setInterval(function() {
+        var timeLeft = animationEnd - Date.now();
+        if (timeLeft <= 0) return clearInterval(interval);
+        var particleCount = 50 * (timeLeft / duration);
+        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+    }, 250);
 }
 </script>
 </body>
