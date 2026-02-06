@@ -16,11 +16,12 @@ button { font-size: 1.2rem; padding: 12px 30px; border: none; border-radius: 50p
 #yesBtn { background-color: #d32f2f; color: white; box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3); position: relative; z-index: 10; }
 #noBtn { background-color: #cfd8dc; color: #333; position: absolute; left: 50%; transform: translateX(20px); transition: all 0.3s ease-out; }
 
+/* Screen States */
 #start-screen { display: block; }
 #question-screen { display: none; }
 #success-message { display: none; }
 
-/* Floating Letter Appearance (2s Delay) */
+/* 3D Envelope Wrapper (Appears after 2s) */
 .envelope-wrapper { 
     margin-top: 20px; 
     cursor: pointer; 
@@ -29,27 +30,40 @@ button { font-size: 1.2rem; padding: 12px 30px; border: none; border-radius: 50p
     animation-delay: 2s; 
     position: relative;
     display: inline-block;
+    filter: drop-shadow(0 8px 15px rgba(0,0,0,0.2));
+    transition: transform 0.2s;
 }
+.envelope-wrapper:active { transform: scale(0.9); } /* Tactile feedback */
 
 @keyframes fadeInLetter { 
     from { opacity: 0; transform: translateY(20px); } 
     to { opacity: 1; transform: translateY(0); } 
 }
 
-/* Red Heart Seal - Positioned ON TOP of the envelope */
+/* 3D Wax Seal - Red Heart Button */
 .heart-seal {
     position: absolute;
-    top: 45%; /* Adjusted for center sealing point */
+    top: 45%; 
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 16px;
-    z-index: 5; /* Higher than the envelope emoji */
-    pointer-events: none; /* Let the click go through to the envelope */
+    font-size: 16px; 
+    z-index: 5;
+    pointer-events: none;
+    background: #d32f2f;
+    color: white;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    border: 2px solid #b71c1c;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.3), inset 0 0 4px rgba(0,0,0,0.2);
 }
 
-.letter-hint { font-size: 0.9rem; color: #d81b60; margin-top: 5px; font-weight: bold; }
+.letter-hint { font-size: 0.9rem; color: #d81b60; margin-top: 10px; font-weight: bold; }
 
-/* Full-Screen Letter Overlay (Baby Pink) */
+/* Full-Screen Baby Pink Letter Overlay */
 #letter-overlay { 
     display: none; 
     position: fixed; 
@@ -67,31 +81,9 @@ button { font-size: 1.2rem; padding: 12px 30px; border: none; border-radius: 50p
     to { transform: translateY(0); } 
 }
 
-.opened-letter-content { 
-    padding: 30px; 
-    text-align: center; 
-    max-width: 85%; 
-}
-
-.poem-text { 
-    font-family: 'Georgia', serif; 
-    font-style: italic; 
-    color: #4a4a4a; 
-    line-height: 1.8; 
-    font-size: 1.15rem; 
-    white-space: pre-line;
-}
-
-.close-btn { 
-    margin-top: 30px; 
-    background: #d81b60; 
-    color: white; 
-    padding: 10px 25px; 
-    border-radius: 20px; 
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-}
+.opened-letter-content { padding: 30px; text-align: center; max-width: 85%; }
+.poem-text { font-family: 'Georgia', serif; font-style: italic; color: #4a4a4a; line-height: 1.8; font-size: 1.15rem; white-space: pre-line; }
+.close-btn { margin-top: 30px; background: #d81b60; color: white; padding: 10px 25px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; }
 
 .promise-text { font-style: italic; color: #880e4f; margin-top: 15px; font-size: 1rem; }
 .start-btn { background-color: #1565c0; color: white; animation: pulse 2s infinite; }
@@ -133,7 +125,7 @@ button { font-size: 1.2rem; padding: 12px 30px; border: none; border-radius: 50p
         
         <div class="envelope-wrapper" onclick="openLetter()">
             <span style="font-size: 80px; display: block; position: relative; z-index: 1;">✉️</span>
-            <span class="heart-seal">❤️</span>
+            <div class="heart-seal">❤️</div>
             <div class="letter-hint">My Sally, there is something more...<br>Tap the letter.</div>
         </div>
     </div>
